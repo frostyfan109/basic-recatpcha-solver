@@ -37,7 +37,6 @@ def text_norm(text: str) -> str:
     rejoined = " ".join([word for word in lemma if nlp.vocab[word].is_stop == False and not word in string.punctuation])
     return rejoined.strip()
 
-i = 1
 def is_match(text: str, predictions: List) -> List[bool]:
     doc = nlp(text)
     noun_phrases = [chunk.text for chunk in doc.noun_chunks]
@@ -51,13 +50,11 @@ def is_match(text: str, predictions: List) -> List[bool]:
         ])
     prediction_syn_lemmas = set(prediction_syn_lemmas)
 
-    global i
-    print(i, phrases_to_match, prediction_syn_lemmas)
-    i += 1
+    print(phrases_to_match, prediction_syn_lemmas)
     return len(phrases_to_match.intersection(prediction_syn_lemmas)) > 0
     
-def solve(text: str, img_bytes: bytes):
+def solve(text: str, img_bytes: bytes, row=3, col=3):
     img_grid = cv2.imdecode(np.frombuffer(img_bytes, dtype=np.uint8), -1)
-    imgs = parse_image_grid(img_grid, 3, 3)
+    imgs = parse_image_grid(img_grid, row, col)
     all_predictions = make_predictions(imgs)
     return [is_match(text, predictions) for predictions in all_predictions]

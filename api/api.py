@@ -9,17 +9,25 @@ CORS(app)
 api = Api(app)
 
 recaptcha_parser = api.parser()
+recaptcha_parser.add_argument("row", type=int, default=3, location="form")
+recaptcha_parser.add_argument("col", type=int, default=3, location="form")
 recaptcha_parser.add_argument("text", type=str, location="form")
 recaptcha_parser.add_argument("file", type=datastructures.FileStorage, location="files")
-@api.route("/recaptcha")
-class Recaptcha(Resource):
+@api.route("/recaptcha/image")
+class ImageRecaptcha(Resource):
     @api.expect(recaptcha_parser)
     def post(self):
         args = recaptcha_parser.parse_args()
         text = args["text"]
         file = args["file"]
+        row = args["row"]
+        col = args["col"]
 
-        return recaptcha.solve(text, file.read())
+        return recaptcha.solve(text, file.read(), row, col)
+
+class SquareRecaptcha(Resource):
+    def post(self):
+        ...
 
 if __name__ == "__main__":
     import argparse
